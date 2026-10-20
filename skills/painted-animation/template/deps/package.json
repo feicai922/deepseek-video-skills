@@ -1,0 +1,12 @@
+{
+  "name": "deepseek-painted-deps",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser libraries for the painted-animation template. Projects scaffolded with scripts/new_project.mjs also install their own copies in the project root; studio.html falls back to this folder so the template can be opened and rendered in place.",
+  "license": "MIT",
+  "dependencies": {
+    "p5": "^2.3.3",
+    "p5.brush": "^2.2.3",
+    "puppeteer-core": "^25.11.0"
+  }
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>大肥鱼 studio · DeepSeek painted animation</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Shantell+Sans:wght@800&family=Ma+Shan+Zheng&display=block">
+<style>
+  html, body { margin: 0; background: #0E1A33; color: #eee; font: 13px system-ui, sans-serif; }
+  main { padding: 12px; display: grid; gap: 8px; }
+  #out { width: min(100%, 1280px); aspect-ratio: 16 / 9; height: auto; background: #EEE9DC; }
+  .p5Canvas { display: none !important; }
+  .bar { display: flex; gap: 10px; align-items: center; max-width: 1280px; }
+  .bar .name { color: #9DBBFF; letter-spacing: .08em; }
+  #scrub { flex: 1; }
+  #tt { font-variant-numeric: tabular-nums; min-width: 190px; }
+</style>
+<!-- Libraries: a scaffolded project installs its own copies (npm install). When the template is opened or rendered in
+     place instead, studio.html falls back to template/deps/node_modules (see template/deps/package.json). -->
+<script>
+  (function () {
+    var p5 = document.createElement('script');
+    p5.src = 'node_modules/p5/lib/p5.min.js';
+    p5.onerror = function () { loadLocal(); };
+    function loadLocal() {
+      p5.src = 'deps/node_modules/p5/lib/p5.min.js';
+      p5.onerror = function () { document.body.insertAdjacentHTML('beforeend', '<p style="color:#F2A6A6">Libraries missing: run <code>npm install</code> here, or <code>npm install</code> in deps/.</p>'); };
+      document.head.appendChild(p5);
+    }
+    document.head.appendChild(p5);
+    var b = document.createElement('script');
+    b.src = 'node_modules/p5.brush/dist/p5.brush.js';
+    b.onerror = function () { b.src = 'deps/node_modules/p5.brush/dist/p5.brush.js'; document.head.appendChild(b); };
+    p5.onload = function () { document.head.appendChild(b); };
+  })();
+</script>
+</head>
+<body>
+<script>
+  // show any page error in the studio window (a broken scene would otherwise just render nothing)
+  window.addEventListener('error', function (e) {
+    var b = document.getElementById('errbox');
+    if (!b) { b = document.createElement('pre'); b.id = 'errbox'; b.style.cssText = 'margin:8px 12px;padding:8px 10px;background:#4a1620;color:#FFD7DE;border-radius:6px;font:12px/1.5 ui-monospace,monospace;white-space:pre-wrap;max-width:1280px'; document.body.insertBefore(b, document.body.firstChild); }
+    b.textContent += (e.message || String(e.error)) + '  @ ' + String(e.filename || '').split('/').pop() + ':' + (e.lineno || 0) + String.fromCharCode(10);
+  });
+</script>
+<main>
+  <canvas id="out" width="1920" height="1080"></canvas>
+  <div class="bar"><span class="name">大肥鱼</span><input id="scrub" type="range" min="0" max="11" step="0.0417" value="0"><span id="tt">loading…</span></div>
+</main>
+<!-- engine -->
+<script src="src/config.js"></script>
+<script src="src/core.js"></script>
+<script src="src/deepseek.js"></script>
+<script src="src/timeline.js"></script>
+<!-- reference sheets (standalone loops): ?loop=views | ?loop=emotions -->
+<script src="src/sheets.js"></script>
+<!-- your video: add a script per scene file, in order -->
+<script src="src/scenes/deepsea.js"></script>
+<script>
+  // Open studio.html?loop=emotions (or views) to scrub a standalone loop instead of the video.
+  const q = new URLSearchParams(location.search).get('loop'); if (q && LOOPS[q]) window.LOOP = LOOPS[q];
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "deepseek-fat-fish-animation",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "description": "大肥鱼 (the DeepSeek fat fish girl), painted in p5.brush: a character kit and guide for hand-painted DeepSeek animations. Derived from ClaudeAnimationBase by John Heibel (MIT).",
+  "scripts": {
+    "sheet": "node render.mjs --sheet=0,1,2,3,4,5 --out=out/sheet.jpg",
+    "video": "node render.mjs --clip --out=out/video.mp4"
+  },
+  "dependencies": {
+    "p5": "^2.3.3",
+    "p5.brush": "^2.2.3",
+    "puppeteer-core": "^25.11.0"
+  }
+}
