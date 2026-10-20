@@ -34,6 +34,14 @@
 配件系统。示例：《最后一点深海的光》，14 秒短片（[MP4](skills/painted-animation/docs/deepsea.mp4)）：她咬开困住小鱼的贝壳，
 把它一路带到水面。[文档](skills/painted-animation/README.zh-CN.md)。
 
+### 角色（大肥鱼）
+
+她完全由代码绘制，全部在一个文件里：
+[`skills/painted-animation/template/src/deepseek.js`](skills/painted-animation/template/src/deepseek.js) ——
+`deepseeker(x, y, u, opts)`，含五张关键视角（正面、3/4、侧面、3/4 背面、背面）、39 种情绪、12 顶帽子、眼镜、背包，
+以及一条按自己节拍摆动的鲸鱼尾。设定原文见 [`角色设定.md`](角色设定.md)，成品设定表见
+[`大肥鱼角色设定表.png`](大肥鱼角色设定表.png) 与 [`大肥鱼.png`](大肥鱼.png)。
+
 ### kinetic-reel
 
 ![kinetic-reel](skills/kinetic-reel/docs/deepseek-reel.gif)

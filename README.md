@@ -38,6 +38,14 @@ a whale tail that keeps its own beat, and hats and accessories. Example: "The la
 ([MP4](skills/painted-animation/docs/deepsea.mp4)) in which she frees a tiny fish trapped in a shell and carries it up
 to the surface. [Documentation](skills/painted-animation/README.md).
 
+### The character (大肥鱼)
+
+She is drawn entirely in code, in one file:
+[`skills/painted-animation/template/src/deepseek.js`](skills/painted-animation/template/src/deepseek.js) —
+`deepseeker(x, y, u, opts)` with five key views (front, 3/4, side, 3/4 back, back), 39 emotions, 12 hats, glasses, bag and
+a whale tail that keeps its own beat. The design brief is [`角色设定.md`](角色设定.md); the finished model sheet and
+character sheet are [`大肥鱼角色设定表.png`](大肥鱼角色设定表.png) and [`大肥鱼.png`](大肥鱼.png).
+
 ### kinetic-reel
 
 ![kinetic-reel](skills/kinetic-reel/docs/deepseek-reel.gif)
