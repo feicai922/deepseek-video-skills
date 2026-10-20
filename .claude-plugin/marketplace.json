@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "painted-animation",
-      "description": "Hand-painted watercolour-and-ink cartoons and lyric videos starring 大肥鱼 (the DeepSeek fat fish girl): p5.js + p5.brush, rendered frame by frame in headless Chrome, with storyboarding, character acting, beat sync and (opt-in) karaoke.",
+      "description": "Hand-painted watercolour-and-ink cartoons and lyric videos starring 大肥鱼 (the DeepSeek little whale): p5.js + p5.brush, rendered frame by frame in headless Chrome, with storyboarding, character acting, beat sync and (opt-in) karaoke.",
       "source": "./",
       "strict": false,
       "skills": ["./skills/painted-animation"],

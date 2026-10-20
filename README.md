@@ -5,7 +5,7 @@
 <a href="README.md"><img src="https://img.shields.io/badge/English-050D24?style=for-the-badge" alt="English"></a>
 <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/简体中文-2B59D8?style=for-the-badge" alt="简体中文"></a>
 
-DeepSeek-themed video-making skills for Claude Code and compatible agents — 大肥鱼, the fat fish girl, one skill per
+DeepSeek-themed video-making skills for Claude Code and compatible agents — 大肥鱼, the little whale, one skill per
 visual style, every frame and every note generated in code.
 
 </div>
@@ -33,7 +33,7 @@ fan-made character (not the DeepSeek logo, not an official mascot).
 
 ![painted-animation](skills/painted-animation/docs/views.jpg)
 
-Draws every shot with p5.js and the p5.brush watercolour library. 大肥鱼 acts through 39 emotions, five drawn key views,
+Draws every shot with p5.js and the p5.brush watercolour library. 大肥鱼 acts through 34 emotions, five drawn key views,
 a whale tail that keeps its own beat, and hats and accessories. Example: "The last deep-sea light", a 14-second short
 ([MP4](skills/painted-animation/docs/deepsea.mp4)) in which she frees a tiny fish trapped in a shell and carries it up
 to the surface. [Documentation](skills/painted-animation/README.md).
@@ -42,7 +42,7 @@ to the surface. [Documentation](skills/painted-animation/README.md).
 
 She is drawn entirely in code, in one file:
 [`skills/painted-animation/template/src/deepseek.js`](skills/painted-animation/template/src/deepseek.js) —
-`deepseeker(x, y, u, opts)` with five key views (front, 3/4, side, 3/4 back, back), 39 emotions, 12 hats, glasses, bag and
+`deepseeker(x, y, u, opts)` with five key views (front, 3/4, side, 3/4 back, back), 34 emotions, 12 hats, glasses, bag and
 a whale tail that keeps its own beat. The design brief is [`角色设定.md`](角色设定.md); the finished model sheet and
 character sheet are [`大肥鱼角色设定表.png`](大肥鱼角色设定表.png) and [`大肥鱼.png`](大肥鱼.png).
 

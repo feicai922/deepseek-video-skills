@@ -1,6 +1,6 @@
 ---
 name: painted-animation
-description: Make hand-painted watercolour-and-ink cartoon videos (MP4) with code — p5.js + p5.brush rendered frame by frame in headless Chrome, encoded with ffmpeg — starring 大肥鱼 (the DeepSeek fat fish girl) or any character you design. Use when the user asks to make an animation, animated short, cartoon, music video, lyric video, animated GIF/loop, "a video of 大肥鱼 / the DeepSeek fish", or mentions the PDoomVideo / ClaudeAnimationBase approach. Covers storyboarding, the engine API, the render-and-look review loop, music/lyric sync and splitting long videos across subagents.
+description: Make hand-painted watercolour-and-ink cartoon videos (MP4) with code — p5.js + p5.brush rendered frame by frame in headless Chrome, encoded with ffmpeg — starring 大肥鱼 (the DeepSeek little whale) or any character you design. Use when the user asks to make an animation, animated short, cartoon, music video, lyric video, animated GIF/loop, "a video of 大肥鱼 / the DeepSeek fish", or mentions the PDoomVideo / ClaudeAnimationBase approach. Covers storyboarding, the engine API, the render-and-look review loop, music/lyric sync and splitting long videos across subagents.
 ---
 
 # Painted animation (DeepSeek 大肥鱼 edition)

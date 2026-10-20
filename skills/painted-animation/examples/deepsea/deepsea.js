@@ -1,10 +1,10 @@
-// deepsea.js: "The last deep-sea light", a 14-second example that exercises the kit, starring 大肥鱼 (the fat fish girl).
+// deepsea.js: "The last deep-sea light", a 14-second example that exercises the kit, starring 大肥鱼 (the little whale).
 // It is one idea, not a template: don't copy its story, staging or palette into your own video (see ANIMATION_GUIDE.md).
 //   Shot A (0–6.4 s): 大肥鱼 swims down through the dark towards a small light on the seabed. The light is a tiny fish
 //                     trapped in a shell. She notices, gets the idea, chomps the shell open (scrunch!), and the tiny
 //                     fish swims free. Bubble wipe.
 //   Shot B (6.4–14 s): the tiny fish circles her tail like a little curler; she laughs, turns plum, and lets it ride on
-//                     her headdress as she swims up towards the surface, where the water turns pale and gold. Iris out on
+//                     her back as she swims up towards the surface, where the water turns pale and gold. Iris out on
 //                     the light.
 // Built like a fish: her whale tail beats on every swim phase, fins flare on takes, and the eyes lead every reaction.
 (() => {
@@ -119,7 +119,7 @@
     const mood = emotions(lt, [[0, 'surprised'], [.7, 'love', { lookX: -.4, lookY: .4 }], [1.9, 'laugh'], [3.2, 'happy', { lookX: 1, lookY: -.7 }], [4.6, 'proud']]);
     const tailSwing = .5 + .5 * Math.sin(lt * 3.2);
     deepseeker(tx, ty, 34, { ...mood, view: lt > 2.6 ? 'q' : 'front', flip: lt > 2.6, swim: lt * 1.6, swimAmt: .3, rot: -.16 * up + .04 * Math.sin(lt * 3.2), aL: .5 + .3 * tailSwing, aR: .3 });
-    // the little fish orbits her waist (where the whale tail curls), then settles on her headdress
+    // the little fish orbits her body (where the fluke curls), then settles on her back
     const orb = lt < 3.0;
     if (orb) {
       const a = lt * 4.2, fx = tx + Math.cos(a) * 150, fy = ty - 150 + Math.sin(a) * 40;

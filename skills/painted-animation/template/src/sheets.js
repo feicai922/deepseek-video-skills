@@ -42,4 +42,14 @@
     floor(966);
   };
   LOOPS.views.len = 4;
+  // One big portrait pair (front + side), for checking the character up close: studio.html?loop=portrait
+  LOOPS.portrait = t => {
+    deepseeker(420, 960, 40, { ...feel('neutral', t, { seed: 1 }), view: 'front' });
+    deepseeker(1100, 960, 40, { ...feel('neutral', t, { seed: 2 }), view: 'side' });
+    deepseeker(1740, 960, 40, { ...feel('happy', t, { seed: 3 }), view: 'q' });
+    label('front', 420, 1020, 24);
+    label('side', 1100, 1020, 24);
+    label('happy q', 1740, 1020, 24);
+  };
+  LOOPS.portrait.len = 2;
 })();

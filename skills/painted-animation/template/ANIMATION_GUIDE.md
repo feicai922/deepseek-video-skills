@@ -1,7 +1,7 @@
-# Animating 大肥鱼 (the DeepSeek fat fish girl)
+# Animating 大肥鱼 (the DeepSeek little whale)
 
 Read this whole file before you draw anything. It covers how to make a short, hand-painted cartoon starring 大肥鱼
-(DeepSeek's chibi whale-fish girl) or any character you design: the rules and animation principles that make it look
+(DeepSeek's little whale mascot) or any character you design: the rules and animation principles that make it look
 good, the workflow that catches mistakes, and the full reference for the character and the engine.
 
 The person prompting you decides **what** the video is about. This guide decides **how** it's made. If they ask for
@@ -9,11 +9,11 @@ something the rules below forbid (a caption, a 3D spin), do what they ask.
 
 **No design here is final.** 大肥鱼, her outfits, the emotions and the props are a starting point. Change any of them
 and add whatever new characters, props or emotions the idea needs, drawing them with the same tools and rules so they
-belong with the rest. Keep her on model within one video: the same face, hair, headband, outfit and whale tail in every
+belong with the rest. Keep her on model within one video: the same face, belly, flippers, blowhole and fluke in every
 shot.
 
 Look at the model sheets first:
-- [docs/emotions.jpg](docs/emotions.jpg): every emotion (39 of them), alive.
+- [docs/emotions.jpg](docs/emotions.jpg): every emotion (all 34 of them), alive.
 - [docs/views.jpg](docs/views.jpg): the five key views, the motion helpers, the hats and the colour tints.
 
 ---
@@ -49,7 +49,7 @@ Underneath all three, the viewer has to be able to follow it. Timing (rule 4) is
   and a thin wash over it turns grey. Use `glow()` for anything that shines: it adds real light, under the paper grain.
 - **Deep-sea palette, no pure black or white.** Use `PAL.ink` for black and `PAL.pearl` (or `PAL.cream`) for white. The
   DeepSeek blues (`PAL.deep`, `PAL.mid`, `PAL.bright`), the underwater teal (`PAL.fin`, `PAL.teal`) and a soft paper
-  (`PAL.paper`) carry the whole look. Keep 大肥鱼 clearly readable against the water: her dress is dark navy, her hair
+  (`PAL.paper`) carry the whole look. Keep 大肥鱼 clearly readable against the water: her body is deep blue, her
   bright blue, her headband white.
 
 ### 2. No text
@@ -142,7 +142,7 @@ written as code comes out mechanical, because code moves every part at once, on 
 - **Weight.** A chibi has a big head: it lags a beat behind the body on starts and stops, and settles last.
 - **Arcs.** Living things move on arcs: thrown props, hops, arm swings, tail sweeps (`arcPt`, `ribbon`).
 - **Overlapping action and follow-through.** Don't move every part at once. The eyes lead, the head follows, the body
-  lands, and arms, hair, the ahoge, the headdress ribbon and the **whale tail** drag behind and settle last (use
+  lands, and the flippers, the spout droplets and the **tail** drag behind and settle last (use
   `spring`, `ring` and `backOut`).
 - **Avoid twinning.** Give one arm the action and the other something smaller, offset blink timings with `seed`, and
   give each fish its own `boilKey` so they don't boil in sync.
@@ -150,7 +150,7 @@ written as code comes out mechanical, because code moves every part at once, on 
   nothing.
 - **Strong key poses.** Each shot's storytelling poses should read as stills, with a clear silhouette.
 - **Show the thought.** She notices, thinks, then acts, and the eyes move first.
-- **Secondary action.** Small actions that support the main one (a tail flick, an emote popping, hair drifting) add
+- **Secondary action.** Small actions that support the main one (a tail flick, an emote popping, bubbles drifting) add
   life, but never compete with it.
 
 ---
@@ -217,7 +217,7 @@ node render.mjs --strip=2.1:2.6 --crop-at=960,780,500,400 --out=out/check/feet.j
 Check: is the event of each shot clear from its sheet alone? Is she big enough and does she separate from the water?
 Is the whale tail visible and does it move on its own beat? Timing: count the frames each read gets (24 = 1 s). Motion:
 anticipation and follow-through, no pops? Boil: still things must not re-boil (give them their own `boilSeed`).
-Contacts: do the shoes touch the ground, does a held prop touch the hand, does the fluke sit on the hip? Transitions at
+Contacts: does the flipper meet the body, does a held prop touch the flipper tip, does the fluke meet its stalk? Transitions at
 every seam? Any text, any 3D, any muddy glows?
 
 Fix and look again. **Budget:** at least one sheet per shot, a strip per key motion and transition, a crop per face.
@@ -241,7 +241,7 @@ Report the output path, length and ms/frame. Offer `open out/video.mp4`.
 |---|---|
 | `src/config.js` | `PROJECT = { duration, bpm, offset, audio? }` |
 | `src/core.js` | canvas, palette, timing and motion helpers, `paint()`, camera, full-frame effects, `glow()`, lettering, paper, render hooks, the brush probe and its 2D fallback |
-| `src/deepseek.js` | 大肥鱼: key views, the face, the maid outfit, the whale tail, emotions, moves, `swim()` / `hopWalk()` |
+| `src/deepseek.js` | 大肥鱼: key views, the face, the body, flippers, the fluke, emotions, moves, `swim()` / `hopWalk()` |
 | `src/timeline.js` | `shots()`, `LOOPS`, `brushWipe()` |
 | `src/sheets.js` | the model sheets as loops (`?loop=emotions`, `?loop=views`) |
 | `src/scenes/deepsea.js` | the 14-second demo ("The last deep-sea light"). **Don't copy it** |
@@ -276,7 +276,7 @@ Report the output path, length and ms/frame. Offer `open out/video.mp4`.
 - **Shapes:** `rectPts(x, y, w, h, j)`, `ellPts(cx, cy, rx, ry, n, j, rot)`, `rrPts(x, y, w, h, r, j)`,
   `starPts(cx, cy, r, inner, n, rot)`, `heartPts(cx, cy, r)`, `through(P)` (smooth curve), `ribbon(P, w0, w1)` (a
   tapered ribbon: tails, hair, fins, trails).
-- **One shape, one outline.** A hair lock is one `ribbon`, not five circles.
+- **One shape, one outline.** A tail lobe is one `ribbon`/polygon, not five circles.
 - **Light:** `glow(x, y, r, colour, a)`, additive, drawn before whatever sits in front of the light.
 - **Palette** `PAL`: `paper, ink, deep, mid, bright, fin, pearl, blush, night, indigo, rose, ochre, sap, teal, violet,
   cream, sky` (plus `clay/clayDk/clayLt`, kept as aliases of the blues for old scenes). `mixCol(a, b, k)` mixes two hex
@@ -319,17 +319,18 @@ paper. `setup()` probes it once by painting a red test square and reading the pi
 
 ## 大肥鱼
 
-She is DeepSeek's chibi "blue fat fish girl", drawn as this kit's own character from the prompt's 角色设定.md: a big
-round head (about 3 heads tall in total), deep-blue wavy hair with one cheeky ahoge (呆毛), whale-fin ears, big bright
-blue eyes, a soft open smile, blush, and a blue-and-white maid outfit: a white frilled headband (女仆发箍) with a navy
-ribbon, a puffy-sleeved navy dress, a white apron with a little whale mark, a chest bow, Mary Jane shoes, and a dark
-navy whale tail whose fluke curls out beside her hip. She may carry a blue satchel (`bag: true`).
+She is DeepSeek's **little whale**, drawn as this kit's own character from the prompt's 角色设定.md: an animal mascot, not
+a girl. One round deep-blue body (no head/body split, no arms, legs, hair or clothes), a pearl belly patch, two paddle
+flippers, a small dorsal fin, a paired blowhole with a three-droplet spout, and a two-lobed fluke that sweeps out behind
+her and keeps its own beat. Big glossy eyes, a wide whale smile and blush sit on the front of the body. She may carry a
+little satchel (`bag: true`). Because there are no hands, emotions read from eyes + mouth + body bounce + flipper angle
++ tail speed — the tail is the main actor.
 
 ```js
-deepseeker(x, y, u, options)   // (x, y) = ground point between the shoes; u = size unit
+deepseeker(x, y, u, options)   // (x, y) = ground point under the body; u = size unit
 ```
 
-**Sizes:** about 10.9u tall (hair top), 4.3u half-width; the arms reach past the dress.
+**Sizes:** about 10.9u tall (crown to the bottom of the body), 4.1u half-width; the fluke reaches ~7u out when it sweeps.
 
 | shot | u | on screen |
 |---|---|---|
@@ -342,11 +343,11 @@ deepseeker(x, y, u, options)   // (x, y) = ground point between the shoes; u = s
 
 | group | options |
 |---|---|
-| pose | `dx`, `dy` (in u; −dy = up), `sq` (squash; negative stretches), `rot` (pivots at the feet), `flip`, `sx`, `sy`, `aL`, `aR` (arm angle: 0 = by the skirt, + = raised outward, − = tucked; ±1.4 is vertical), `walk` (leg phase: a waddle), `swim` (tail-beat phase), `swimAmt` 0..1 (leans into travel), `noLegs`, `noShadow`, `noHat` |
+| pose | `dx`, `dy` (in u; −dy = up), `sq` (squash; negative stretches), `rot` (pivots at the body's base), `flip`, `sx`, `sy`, `aL`, `aR` (flipper angle: 0 = resting down, + = raised out and up, − = tucked; ±1.4 is vertical), `walk` (a waddle: the body rocks and the flippers paddle), `swim` (tail-beat phase), `swimAmt` 0..1 (leans into travel), `noShadow`, `noHat` |
 | view | `view`: front, q, side, qback, back. `smear` 0..1 + `smearDir` ±1 (0 = both sides) for fast moves |
 | face | `eyes`, `mouth`, `lookX`/`lookY` (−1..1), `squint` 0..1, `blush` 0..1, `gloom` 0..1, `seed` (blink timing) |
-| colour | `tint` (pale, flush, blue, rosy, green, gold, or any hex) + `tintK`, or `col`/`dk` (hair), `dress`/`dressDk`, `fin` |
-| extras | `hat`, `bag`, `emote` + `emoteK` (0..1 pop) + `emoteAge`, `draw(u, sw)` (over everything), `faceDraw(u, sw)` (in front of the face), `armL(u, sw)` / `armR(u, sw)` (props at the hands) |
+| colour | `tint` (pale, flush, blue, rosy, green, gold, or any hex) + `tintK`, or `col`/`dk`/`lt` (body), `fin` (flippers, fluke, dorsal) |
+| extras | `hat`, `bag`, `spout` (0 = no blowhole spout, default .75), `emote` + `emoteK` (0..1 pop) + `emoteAge`, `draw(u, sw)` (over everything), `faceDraw(u, sw)` (in front of the face), `armL(u, sw)` / `armR(u, sw)` (props at the flipper tips) |
 | boil | `boilKey`: a stable id for its boil seeds (default: call order) |
 
 Options compose by spreading: `deepseeker(x, y, u, { ...feel('happy', t), ...turn(t, 1, 1.15, 0, .25), hat: 'star' })`.
@@ -359,11 +360,11 @@ Drawn key views; every view faces screen-right, add `flip: true` to face left.
 
 | view | what you see |
 |---|---|
-| `front` | the face, both arms, the whale tail's fluke beside the hip |
-| `q` | 3/4: the face shifted toward the heading, both ear fins, the fluke |
-| `side` | profile: one eye, the fringe from the side, one arm, the tail behind |
-| `qback` | 3/4 from behind: the back of the hair, the headdress, the fluke |
-| `back` | no face: hair, headdress, dress bow, fluke |
+| `front` | the face, both flippers, the spout, the fluke sweeping out behind |
+| `q` | 3/4: the face shifted toward the heading, the near flipper in front, the fluke |
+| `side` | profile: one eye, one flipper, the tail trailing behind |
+| `qback` | 3/4 from behind: the back, the dorsal fin, the fluke |
+| `back` | no face: the back, the dorsal fin, the blowhole, the fluke |
 
 - **Turn with `turn(t, t0, t1, a0, a1)`.** Headings are in turns: 0 = front, .25 = facing right, .5 = back, −.25 =
   facing left. It steps through the views over 0.12–0.25 s with smears. For one heading use `spinView(a)`.
@@ -372,7 +373,7 @@ Drawn key views; every view faces screen-right, add `flip: true` to face left.
 
 ### Emotions
 
-39 emotions. Each is a face AND a way of moving, locked to the beat. `feel(name, t, over)` returns all of it at time t:
+34 emotions. Each is a face AND a way of moving, locked to the beat. `feel(name, t, over)` returns all of it at time t:
 
 ```js
 deepseeker(x, y, u, feel('happy', t));                                            // one emotion, alive
@@ -407,14 +408,14 @@ deepseeker(x, y, u, emotions(t, [[0, 'sleepy'], [1.9, 'surprised', { lookX: .8 }
   headband. **Accessories:** `bag` (the blue satchel), `glasses` (`'sun'` for sunglasses).
 - **Emotes** pop in by the head: `!` `?` `!!` `!?` zzz, sweat, spark, heart, hearts, anger, steam, bulb, dots,
   scribble, music, swirl, stars, cloud, bubble. `emoteK` is the 0..1 pop and `emoteAge` drives the looping ones.
-- **Colour:** `tint` shifts hair and dress with the mood: pale (fear), flush (anger), blue (sadness), rosy (love),
+- **Colour:** `tint` shifts the body and fins with the mood: pale (fear), flush (anger), blue (sadness), rosy (love),
   green (disgust), gold (pride). `gloom` adds a dark forehead with hanging lines; `blush` adds cheeks.
 
 ### Hooks: props and accessories
 
 - **`draw(u, sw)`** paints in body-local space, over everything (hat, near arm). It squashes, flips and moves with her.
   Body-local reference (front view, in u): head centre (0, −6.75) with radius 4.3; eyes at (±2.35, −6.95); mouth at
-  (0, −6.0); dress from y −3.7 to −1.1; hands about (±3, −1.5); the fluke at about (1.75, −3.75).
+  (0, −6.0); belly patch from y −5.1 down to −2.2; flipper roots about (±3.2, −4.8) with tips near (±5.4, −3.7); the fluke at about (4.2, −2.8).
 - **`faceDraw(u, sw)`** is the same, in front of the face only (glasses, a mask, tears).
 - **`armL(u, sw)` / `armR(u, sw)`** are called at the hand, so a held prop just draws around (0, 0) and follows the arm:
 
@@ -466,7 +467,7 @@ These are the things that make a 大肥鱼 video look generated. Check your stor
 
 [src/scenes/deepsea.js](src/scenes/deepsea.js) ("The last deep-sea light", 14 s) exists to show the kit working: an
 acted emotion timeline, a drawn glide with the tail leading, a take, a chomp, a little fish that orbits her waist and
-rides on her headdress, a climb from the abyss to the surface, a brush wipe and an iris in and out. **It's one idea, not
+rides on her back, a climb from the abyss to the surface, a brush wipe and an iris in and out. **It's one idea, not
 a template.** Don't reuse its story, shell, light or shot structure. Replace its script tag in `studio.html` with yours.
 
 ### Worked example: how the demo times its ending
@@ -478,5 +479,5 @@ The last shots, in video time:
 | 4.0–4.7 | she dives and chomps the shell open | fast motion, anticipated by the idea and the crouch |
 | 4.7–5.4 | the little fish swims free and she blinks in surprise | the payoff; nothing else moves while the eye follows the fish |
 | 6.4–7.2 | the fish circles her tail | a new action, her reaction (love) only after the viewer sees it |
-| 9.6–10.4 | she laughs, the fish settles on her headdress | cause then effect, held |
+| 9.6–10.4 | she laughs, the fish settles on her back | cause then effect, held |
 | 12.4–14 | she rises into the pale water, iris on her face and the fish, hold, shut | the last read gets time to land before the video ends |

@@ -4,9 +4,10 @@ The project template behind the **painted-animation** skill of the DeepSeek vide
 hand-painted cartoon frame by frame in headless Chrome: every frame is a pure function of time, painted with
 [p5.js](https://p5js.org) and [p5.brush](https://github.com/acamposuribe/p5.brush) watercolour, and encoded with ffmpeg.
 
-The star is **大肥鱼**, the chibi whale-fish girl drawn for this kit (see [ANIMATION_GUIDE.md](ANIMATION_GUIDE.md),
-"大肥鱼"): big round head, deep-blue wavy hair with an ahoge, whale-fin ears, a white maid headband, a navy-and-white
-maid outfit and a whale tail. She is an original fan-made character, not the DeepSeek logo and not an official mascot.
+The star is **大肥鱼**, the little whale drawn for this kit (see [ANIMATION_GUIDE.md](ANIMATION_GUIDE.md),
+"大肥鱼"): a round deep-blue body, a pearl belly, two paddle flippers, a small dorsal fin, a paired blowhole with a
+three-droplet spout and a two-lobed fluke. She is an original fan-made character, not the DeepSeek logo and not an
+official mascot.
 
 ## Run it
 

@@ -19,11 +19,11 @@ music synchronisation and (opt-in) karaoke subtitles. All imagery is drawn proce
 [p5.brush](https://github.com/acamposuribe/p5.brush) watercolour library; no image generation model is involved. Every
 frame is a pure function of time, rendered in headless Chrome and encoded with ffmpeg.
 
-The cast is **大肥鱼**: the chibi whale-fish girl drawn for this kit from the collection's `角色设定.md` — a big round
-head, deep-blue wavy hair with an ahoge, whale-fin ears, big blue eyes, a soft smile, a white maid headband, a navy and
-white maid outfit and a whale tail whose fluke curls out beside her hip. She has 39 emotions, five drawn key views,
-hats and accessories, and dance / walk / swim helpers. She is an original fan-made character, **not** the DeepSeek logo
-and not an official DeepSeek mascot.
+The cast is **大肥鱼**: the little whale drawn for this kit from the collection's `角色设定.md` — an animal mascot, not
+a girl: a round deep-blue body with a pearl belly, two paddle flippers, a small dorsal fin, a paired blowhole with a
+three-droplet spout and a two-lobed fluke that sweeps behind her, with big glossy eyes and a wide smile on the front of
+the body. She has 34 emotions, five drawn key views, 12 hats, glasses and a satchel, and dance / walk / swim helpers.
+She is an original fan-made character, **not** the DeepSeek logo and not an official DeepSeek mascot.
 
 ## How It Works
 

@@ -1,24 +1,23 @@
-// deepseek.js: DeepSeek 大肥鱼 (the DeepSeek fat fish girl), painted in watercolour and ink.
+// deepseek.js: DeepSeek 大肥鱼 — now a little whale: the animal mascot/logo, painted in watercolour and ink.
 //
-// 大肥鱼 is the internet's beloved "blue fat fish" riff on DeepSeek-chan, drawn as this kit's own character from the
-// brief in the repository's 角色设定.md: a chibi (three-heads-tall) whale-fish girl with a big round head, deep-blue
-// wavy hair with one cheeky ahoge, whale-fin ears, a dark-blue whale tail, big bright blue eyes, and a blue-and-white
-// maid outfit (frilled headdress, puffy sleeves, apron, skirt, Mary Jane shoes), with gold and blush-pink accents.
-// It is an original fan-made character, not the DeepSeek logo, and not an official DeepSeek mascot.
+// She is no longer a whale girl: she is a chubby baby whale, the logo itself — a round deep-blue body with a pale belly,
+// two flipper fins, a small dorsal fin, a blowhole, and a two-lobed fluke that curls up behind her; big glossy eyes, a
+// soft mouth and blush on the front of the body. It is an original fan-made character, not the DeepSeek logo and not an
+// official DeepSeek mascot.
 //
-// `u` is the size unit. (x, y) is the ground point between the feet; the figure is about 10.9u tall (hair top at
-// y - 10.9u) and 7.6u wide with the arms at rest. The head is a circle of radius 4u centred at (0, -6.95u): big head,
-// small body, the proportions of the 设定表.
+// `u` is the size unit. (x, y) is the ground point under the body; the whale is about 9.9u tall (crown at y - 10.95u)
+// and 8.2u wide with the fluke out. The face sits on the front of the body: eyes at (±2.35u, -6.95u), mouth at (0, -6.1u).
 //
 // Body-local coordinates (the o.draw / o.faceDraw / o.armL / o.armR hooks):
-//   eye centres (±2.35u, -6.75u); mouth near (0, -4.9u); cheeks at (±3.5u, -5.55u); hands about (±3u, -1.5u).
+//   crown (0, -10.95); widest (±4.1, -6.7); belly patch from y -5.4 down to -1.3; fluke about (3.4, -3.0);
+//   fin roots at (±3.5, -5.05); fin tips about (±4.3, -6.4).
 //
 // Everything here draws one frame. Motion comes from what you pass in: feel() / emotions() for moods, move() for
 // dances, turn() for turns, jump() / take() / stroll() from core.js, and swim() / hopWalk() from this file.
 //
 // ---------- colour ----------
 const FISH = { col: '#5B93FF', dk: '#2F5BD0', deep: '#1E3A8A', lt: '#A9C9FF', fin: '#6FD3E0', pearl: PAL.pearl, blush: PAL.blush, dress: '#1E3A6E', dressDk: '#13245A' };
-// Tints shift the hair and dress colour with the mood. tint: a name here or any hex colour; tintK: 0..1 strength.
+// Tints shift the body and belly colour with the mood. tint: a name here or any hex colour; tintK: 0..1 strength.
 const TINT = { pale: '#DCE8F2', flush: '#F26B5E', blue: '#5B6FAE', rosy: '#F7A6C4', green: '#8FC58A', gold: '#F2C14E' };
 function fishCols(o) {
   const c = { col: o.col || FISH.col, dk: o.dk || FISH.dk, deep: o.deep || FISH.deep, lt: o.lt || FISH.lt, fin: o.fin || FISH.fin,
@@ -31,24 +30,30 @@ function fishCols(o) {
 
 // ---------- views ----------
 // Turns are drawn KEY VIEWS, like a cartoon model sheet, never a rotated 3D body. Every view faces screen-right;
-// flip: true mirrors it. bx/by/rx/ry: the head (and tail root); q: depth (1 front, 0 side, -1 back) for the hair mass,
-// the far ear-fin and the arms; face: { cx, sx, eyes, mouth, cheek, back } places the features in body units.
+// flip: true mirrors it. bx/by/rx/ry: the body (hats sit on the crown at by - ry), q: depth (1 front, 0 side, -1 back)
+// for the belly, the far fin and the dorsal fin; face: { cx, sx, eyes, mouth, cheek, back } places the features in body
+// units; tail: where the fluke curls up behind; fins: [x, y, scale, layer] with layer 0 behind the body, 1 in front.
 const VIEWS = {
-  front: { bx: 0, by: -6.95, rx: 4, ry: 4, tailAng: 0, q: 1, tail: 3.4,
-           face: { cx: 0, sx: 1, eyes: [-2.35, 2.35], mouth: [0, -4.9], cheek: [-3.5, 3.5] },
-           arms: [[-1.9, -3.5, 'L', 1], [1.9, -3.5, 'R', 1]] },
-  q:     { bx: .3, by: -6.95, rx: 3.9, ry: 4, tailAng: .6, q: .8, tail: 3.2,
-           face: { cx: 1.1, sx: .84, eyes: [-1.3, 3.2], mouth: [1.15, -4.9], cheek: [3.6] },
-           arms: [[-1.1, -3.5, 'L', 0], [2.4, -3.5, 'R', 1]] },
-  side:  { bx: 0, by: -6.95, rx: 3.9, ry: 4, tailAng: Math.PI / 2, q: 0, tail: 3.0,
-           face: { cx: 1.5, sx: .66, eyes: [2.0], mouth: [2.25, -4.85], cheek: [-2.2] },
-           arms: [[1.2, -3.5, 'L', 1]] },
-  qback: { bx: -.3, by: -6.95, rx: 3.9, ry: 4, tailAng: 2.2, q: -.8, tail: 3.2,
+  front: { bx: 0, by: -6.95, rx: 4, ry: 4, bw: 1, tailAng: 0, q: 1, tail: 3.4,
+           face: { cx: 0, sx: 1, eyes: [-2.5, 2.5], mouth: [0, -6.1], cheek: [-3.6, 3.6] },
+           tail: { x0: 2.4, y0: -2.6, fx: 4.15, fy: -2.75, ang: -.12, sc: 1.15 },
+           fins: [[-3.15, -4.8, 1.35, 1], [3.15, -4.8, 1.35, 1]] },
+  q:     { bx: .3, by: -6.95, rx: 3.9, ry: 4, bw: 1.04, tailAng: .6, q: .8, tail: 3.2,
+           face: { cx: 1.1, sx: .84, eyes: [-1.35, 3.35], mouth: [1.2, -6.1], cheek: [3.7] },
+           tail: { x0: 2.3, y0: -2.6, fx: 4.35, fy: -2.95, ang: -.2, sc: 1.1 },
+           fins: [[-3.0, -4.85, 1.15, 0], [3.35, -4.75, 1.4, 1]] },
+  side:  { bx: 0, by: -6.95, rx: 3.9, ry: 4, bw: 1.1, tailAng: Math.PI / 2, q: 0, tail: 3.0,
+           face: { cx: 1.5, sx: .66, eyes: [2.0], mouth: [2.25, -6.05], cheek: [-2.2] },
+           tail: { x0: 2.2, y0: -2.65, fx: 4.9, fy: -2.6, ang: -.08, sc: 1.1 },
+           fins: [[3.0, -4.2, 1.35, 1]] },
+  qback: { bx: -.3, by: -6.95, rx: 3.9, ry: 4, bw: 1.02, tailAng: 2.2, q: -.8, tail: 3.2,
            face: { cx: 0, sx: 1, eyes: [], mouth: null, cheek: [], back: true },
-           arms: [[-1.9, -3.5, 'L', 0], [1.6, -3.5, 'R', 1]] },
-  back:  { bx: 0, by: -6.95, rx: 4, ry: 4, tailAng: Math.PI, q: -1, tail: 3.4,
+           tail: { x0: 2.2, y0: -2.65, fx: 3.95, fy: -3.05, ang: -.26, sc: 1.05 },
+           fins: [[-3.1, -4.8, 1.25, 0], [3.1, -4.8, 1.25, 0]], dorsal: true },
+  back:  { bx: 0, by: -6.95, rx: 4, ry: 4, bw: 1, tailAng: Math.PI, q: -1, tail: 3.4,
            face: { cx: 0, sx: 1, eyes: [], mouth: null, cheek: [], back: true },
-           arms: [[-1.9, -3.5, 'L', 0], [1.9, -3.5, 'R', 0]] },
+           tail: { x0: 2.15, y0: -2.7, fx: 3.8, fy: -3.2, ang: -.3, sc: 1.0 },
+           fins: [[-3.15, -4.75, 1.3, 0], [3.15, -4.75, 1.3, 0]], dorsal: true },
 };
 // Key view for a heading in turns: 0 = front, .25 = facing right, .5 = back, .75 (or -.25) = facing left.
 // Snaps to the nearest eighth, which is how a drawn turn works: front -> q -> side, one drawing per step.
@@ -63,18 +68,19 @@ function turn(t, t0, t1, a0, a1) {
   return { ...v, smear: t > t0 && t < t1 ? .55 * Math.sin(k * Math.PI) : 0, smearDir: 0 };
 }
 
-// ---------- the fat fish ----------
+// ---------- the little whale ----------
 // Options (all optional):
-//   pose:    dx, dy (in u; negative dy = up), sq (squash; negative stretches), rot (pivots at the feet), flip, sx, sy,
-//            aL, aR (arm angles: 0 = hanging by the skirt, + = raised outward, - = tucked), walk (leg phase: a waddle),
-//            swim (tail beat phase), swimAmt 0..1 (travelling: leans into the motion), noLegs (no legs or shoes: swims
-//            fully in water), noShadow, noHat
+//   pose:    dx, dy (in u; negative dy = up), sq (squash; negative stretches), rot (pivots at the body's base), flip,
+//            sx, sy, aL, aR (fin angles: 0 = resting down, + = raised out and up, - = tucked under), walk (a waddle:
+//            the body rocks and the fins paddle), swim (tail-beat phase), swimAmt 0..1 (travelling: leans into the
+//            motion), noShadow, noHat
 //   view:    front | q | side | qback | back (see VIEWS). smear 0..1 + smearDir ±1 (0 = both sides) for fast moves
 //   face:    eyes (a name, or [left, right]), mouth, lookX / lookY (-1..1), squint 0..1, blush 0..1,
-//            gloom 0..1 (dark forehead with gloom lines), seed (blink timing)
-//   colour:  col / dk / deep / lt (hair), dress / dressDk (the navy dress), fin (the whale fins and tail), or tint + tintK
-//   extras:  bag (the little blue satchel), emote + emoteK + emoteAge, draw(u, sw) (painted over everything),
-//            faceDraw(u, sw) (in front of the face), armL / armR (u, sw) props, each called at that hand
+//            gloom 0..1 (a dark shadow over the brow), seed (blink timing)
+//   colour:  col / dk / deep / lt (body), fin (fins, fluke, belly highlight), or tint + tintK
+//   extras:  bag (the little satchel), spout 0..1 (a blowhole spout), emote + emoteK + emoteAge,
+//            draw(u, sw) (painted over everything), faceDraw(u, sw) (in front of the face),
+//            armL / armR (u, sw) props, each called at that fin's tip
 //   boil:    boilKey (a stable id for its boil seeds; defaults to call order, so set it if characters come and go)
 //
 // Drawing note: this engine runs in p5 WEBGL, where translate()/scale() only reach the canvas after the next
@@ -89,7 +95,7 @@ function deepseeker(x, y, u, o = {}) {
   const C = fishCols(o), back = !!(V.face && V.face.back);
   const swp = Math.sin((o.swim || 0) * TAU), swimAmt = clamp(o.swimAmt || 0);
   const sx = (o.flip ? -1 : 1) * (o.sx ?? 1) * (1 + sq * .55) * (1 + sm * .3), syg = (o.sy ?? 1) * (1 - sq);
-  const th = (o.rot || 0) + (o.swim ? -.1 * swimAmt * Math.sin(V.tailAng) : 0), ct = Math.cos(th), sn = Math.sin(th);
+  const th = (o.rot || 0) + (o.swim ? -.09 * swimAmt * Math.sin(V.tailAng) : 0), ct = Math.cos(th), sn = Math.sin(th);
   const ox = x, oy = y + dy;
   // body-local (bx, by) in u -> canvas px
   function map(bx, by) { const px = bx * u * sx, py = by * u * syg; return [ox + px * ct - py * sn, oy + px * sn + py * ct]; }
@@ -97,127 +103,95 @@ function deepseeker(x, y, u, o = {}) {
   // a body-local paint()/inkLine() pair: the points are mapped, so no canvas transform is involved
   function P(pts, style) { if (pts && pts.length) paint(poly(pts), style); }
   function INK(pts, weight, col = PAL.ink, brush = 'ink', curv = .5) { if (pts && pts.length > 1) inkLine(poly(pts), weight, col, brush, curv); }
-  const ink = () => PAL.ink;
-  const HAIR = C.col, HAIRD = C.dk, DRESS = C.dress, DRESSD = C.dressDk, SKIN = '#FFE8DA', FIN = C.fin;
+  const BODY = C.col, BODYD = C.dk, BODYDEEP = C.deep, FIN = C.fin;
+  const BELLY = mixCol(C.lt, '#FFFFFF', .52), BELLYD = mixCol(C.lt, C.dk, .3);
+  const tipL = [0, 0], tipR = [0, 0];
 
   rs('shadow');
   if (!o.noShadow) {
     const f = 1 - Math.min(.5, Math.abs(o.dy || 0) * .06);
-    paint(ellPts(x, y + u * .1, u * 3.2 * f, u * .7 * f, 22), { fill: PAL.ink, fillOp: 80, bleed: .25, tex: .3, border: .1, ink: null });
+    paint(ellPts(x, y + u * .1, u * 2.55 * f, u * .58 * f, 22), { fill: PAL.ink, fillOp: 70, bleed: .28, tex: .3, border: .1, ink: null });
   }
-  if (sm > .05) smearTrail(x, y - 7 * u + dy, u, V, sm, o.smearDir ?? (o.flip ? -1 : 1), HAIR);
+  if (sm > .05) smearTrail(x, y - 6.2 * u + dy, u, V, sm, o.smearDir ?? (o.flip ? -1 : 1), BODY);
 
-  // ---------- 1. the whale tail, behind the skirt (its flukes peek out on both sides of the hem) ----------
-  // ---------- 1. the whale tail: behind the skirt, rising into a fluke that curls above the waist ----------
-  // The tail comes down from under the skirt, then sweeps up behind the skirt into a broad two-lobed fluke that peeks
-  // out at the waist: the one cue that says "whale girl" from the front. It sways on the swim beat (swp).
+  // ---------- 1. the fluke, behind the body ----------
+  // A whale's tail: a short stalk from under the body and two long lobes that curl up and apart, with a notch between
+  // them. It keeps its own beat (swp) so the whale never looks like a stiff prop.
   rs('tail');
-  const tAng = V.tailAng + .12 * swp, tq = V.q;
   {
-    const swayX = (V.q < .35 ? 3.6 : .35) * (1 + .25 * Math.sin(tAng));   // from the front the tail flares out well past the skirt
-    const rt = (tq < 0 ? -1 : 1);   // in the back views the tail hangs furthest from us: draw it wider
-    // the fluke: a wide heart-curled whale tail, two rounded lobes and a notch
-    // a whale fluke: two long tapered lobes that sweep out and UP from a short stalk on her right hip, with a
-    // notch between them. Seen from the side the pair folds into one narrower fluke behind her.
-    const fx = (V.q < .35 ? 1.75 : 2.35) * (1 + .1 * Math.sin(tAng)), fy = -3.75, sc = V.q >= 0 ? 3.0 : 2.3;   // in units: a big fluke peeking out beside the waist
-    // a whale fluke: two long tapered lobes that sweep out and up from the hip, with a notch between them
-    for (const side of [-1, 1]) {
-      const tip = [fx + side * 1.7 * sc, fy - 1.15 * sc];
-      const lobe = through([[fx + side * .1 * sc, fy + .15 * sc], [fx + side * .75 * sc, fy - .25 * sc], [fx + side * 1.2 * sc, fy - .8 * sc], tip, [fx + side * 1.05 * sc, fy - .45 * sc], [fx + side * .55 * sc, fy + .1 * sc], [fx + side * .5 * sc, fy + .35 * sc]], 4);
-      P(lobe, { wash: mixCol(FIN, DRESSD, .15), fill: mixCol(FIN, C.deep, .35), fillOp: 80, tex: .4, ink: PAL.ink, sw: sw * .8 });
+    const T0 = V.tail, ang = T0.ang + .13 * swp - .05 * swimAmt, fx = T0.fx + .14 * swp, fy = T0.fy + .08 * swp;
+    const c0 = Math.cos(ang), s0 = Math.sin(ang);
+    const rot = ([px, py], k = T0.sc) => [fx + (px * c0 - py * s0) * k, fy + (px * s0 + py * c0) * k];
+    // the stalk, widening where it meets the fluke
+    P(ribbon(through([[T0.x0, T0.y0], [T0.x0 + (fx - T0.x0) * .5, T0.y0 + (fy - T0.y0) * .5 - .3], [fx - .2 * c0, fy - .2 * s0]], 4), 1.15 * T0.sc, .8 * T0.sc),
+      { wash: FIN, fill: mixCol(FIN, BODYDEEP, .45), fillOp: 70, ink: PAL.ink, sw: sw * .8 });
+    // the fluke: TWO separate lobes that spring from the stalk and sweep apart, with the notch between them
+    for (const sd of [-1, 1]) {
+      const la = ang + sd * .34, cl = Math.cos(la), sl = Math.sin(la);
+      const lobe = through([[.04 * sd, .02], [.68 * sd, -.2], [1.45 * sd, -.5], [2.2 * sd, -.78], [2.5 * sd, -.5],
+                            [2.3 * sd, -.02], [1.55 * sd, .34], [.8 * sd, .28], [.18 * sd, .12], [.12 * sd, .02]], 6)
+        .map(([px, py]) => [fx + (px * cl - py * sl) * T0.sc, fy + (px * sl + py * cl) * T0.sc]);
+      P(lobe, { wash: mixCol(FIN, BODYD, .18), fill: mixCol(FIN, BODYD, .42), fillOp: 80, bleed: .12, tex: .45, ink: PAL.ink, sw: sw * .85 });
+      INK([rot([.55 * sd, -.12 * sd]), rot([1.75 * sd, -.55 * sd])], sw * .55, mixCol(FIN, '#FFFFFF', .6), 'inkfine', .45);
     }
-    P(ellPts(fx, fy + .1, .55 * sc, .45 * sc, 14), { wash: mixCol(FIN, DRESSD, .35), fill: mixCol(FIN, C.deep, .4), fillOp: 80, ink: PAL.ink, sw: sw * .8 });
-    P(ellPts(fx, fy - .05, .3 * sc, .16 * sc, 10), { wash: mixCol(FIN, '#FFFFFF', .5), washOp: 230, ink: null });   // a pale streak, so the fluke reads against the hair and dress
-    // the stem: from behind the skirt up to the fluke root
-    P(ribbon([[.1, -2.1], [.45, -1.95], [fx - .3 * sc, -2.15], [fx - .1, -2.45]], 1.0, .75 * sc), { wash: mixCol(FIN, DRESSD, .3), ink: PAL.ink, sw: sw * .75 });
   }
-  // ---------- 2. the legs and shoes, the arms behind (q/back views) ----------
-  rs('legs');
-  if (!o.noLegs) for (const s of [-1, 1]) {
-    let lift = 0;
-    if (o.walk != null) { const ph = Math.sin((o.walk + (s > 0 ? .5 : 0)) * TAU); if (ph > 0) lift = ph * .28; }
-    const lx = V.bx + s * 1.0;
-    P(rrPts(lx - .38, -2.3 - lift, .76, 1.55, .3), { wash: SKIN, fill: mixCol(SKIN, '#E8C0AE', .4), fillOp: 60, ink: PAL.ink, sw: sw * .6 });
-    P(rrPts(lx - .62, -1.1 - lift, 1.24, .82, .36), { wash: '#1A1420', fill: '#4A3F58', fillOp: 50, ink: PAL.ink, sw: sw * .8 });
-    P(rrPts(lx - .3, -1.02 - lift, .6, .2, .1), { wash: PAL.pearl, washOp: 150, ink: null });   // the Mary Jane strap
-    if (V.q >= -.3) INK([[lx - .45, -.5 - lift], [lx, -.42 - lift], [lx + .45, -.5 - lift]], sw * .35, mixCol('#2B2433', PAL.cream, .5), 'inkfine', .5);
-  }
-  V.arms.filter(a => a[3] === 0).forEach(a => arm(a));
+  // ---------- 2. the fins behind the body ----------
+  const fin = ([bx, by, fs, layer], pass) => {
+    if (layer !== pass) return;
+    const a = bx < 0 ? (o.aL ?? .1) : (o.aR ?? .1), sd = bx < 0 ? -1 : 1;
+    const r = -.05 - a * .9, c = Math.cos(r), s = Math.sin(r), base = [[-.2, -.4], [.45, -.58], [1.1, -.46], [1.55, -.02], [1.72, .52], [1.55, .88], [1.05, 1.0], [.5, .86], [.1, .45], [-.16, .02]];
+    const pts = through(base.map(([px, py]) => [sd * (px * c - py * s) * fs + bx, (px * s + py * c) * fs + by]), 4);
+    rs('fin'); P(pts, { wash: layer ? FIN : mixCol(FIN, BODYD, .18), fill: mixCol(FIN, BODYDEEP, .4), fillOp: 75, ink: PAL.ink, sw: sw * .8 });
+    const tip = pts[Math.floor(pts.length * .72)];
+    if (sd > 0) tipR.splice(0, 2, tip[0], tip[1]); else tipL.splice(0, 2, tip[0], tip[1]);
+    return base;
+  };
+  const drawFins = pass => (V.fins || []).forEach(f => fin(f, pass));
+  drawFins(0);
 
-  // ---------- 3. hair volume, the head ----------
-  rs('hair');
-  const hx = V.face.cx, hr = 4.35;                 // the head's centre and radius
-  // the back hair: one soft mass behind the head, a little wider than it and longer at the sides; no ringlet spikes
+  // ---------- 3. the body ----------
+  rs('body');
+  const BODY_PTS = [
+    [0, -10.95], [1.62, -10.82], [3.0, -10.02], [3.86, -8.55], [4.12, -6.75],
+    [3.98, -5.0], [3.6, -3.62], [3.02, -2.72], [2.16, -2.22], [1.12, -2.08],
+    [.1, -2.2], [-1.05, -2.62], [-2.24, -3.36], [-3.22, -4.52], [-3.94, -6.0],
+    [-4.08, -7.4], [-3.8, -8.9], [-3.0, -10.1], [-1.6, -10.85], [0, -10.95],
+  ];
+  const BW = (V.bw || 1);
+  P(through(BODY_PTS.map(([px, py]) => [px * BW, py]), 6), { wash: BODY, fill: BODYD, fillOp: 55, bleed: .12, tex: .55, ink: PAL.ink, sw: sw * .95 });
+  // a soft rim light down the crown, so the body is not one flat fill
+
+  // the belly: a pale patch on the front, with throat grooves
+  if (V.q > -.45) {
+    rs('belly');
+    const BELLY_PTS = [[0, -5.5], [1.8, -5.22], [2.6, -4.35], [2.82, -3.3], [2.5, -2.62], [1.3, -2.3], [0, -2.24],
+                       [-1.15, -2.55], [-2.3, -3.3], [-2.68, -4.3], [-1.8, -5.22], [0, -5.5]];
+    P(through(BELLY_PTS.map(([px, py]) => [px * BW, py]), 5), { wash: BELLY, fill: BELLYD, fillOp: 35, bleed: .18, tex: .35, ink: PAL.ink, sw: sw * .5 });
+  }
+  // the dorsal fin: only from behind
+  if (V.dorsal) {
+    rs('dorsal');
+    P(through([[-.62, -9.15], [-.34, -10.3], [.08, -10.62], [.46, -10.0], [.58, -9.05], [0, -8.95]], 5),
+      { wash: mixCol(BODY, PAL.ink, .12), fill: BODYD, fillOp: 55, ink: PAL.ink, sw: sw * .8 });
+  }
+  // the blowhole: two little nostrils on the crown
+  rs('blowhole');
   {
-    const pts = [];
-    for (let i = 0; i <= 26; i++) {
-      const a = i / 26 * TAU, sx2 = Math.cos(a), sy2 = Math.sin(a);
-      const long = (sy2 > -.8 ? 1.32 : .8);                          // the sides and bottom fall lower; the crown stays well inside the head
-      pts.push([hx + sx2 * 4.5, -6.8 + sy2 * 4.45 * long]);
-    }
-    P(pts, { wash: HAIR, washOp: 255, fill: HAIRD, fillOp: 170, bleed: .05, tex: .6, ink: PAL.ink, sw: sw * .95 });
-    // two long waves framing the face (front views), curling in at the tips
-    if (V.q > -.35) for (const s of (V.q < .5 ? [-1, 1] : [-1])) {
-      const wx = hx + s * 3.9;
-      P(ribbon([[wx, -7.4], [wx + s * .75, -6.0], [wx + s * .35, -4.4], [wx + s * .8, -3.1], [wx + s * .4, -2.4]], 1.05, .3), { wash: HAIR, fill: HAIRD, fillOp: 90, ink: PAL.ink, sw: sw * .7 });
+    const bx0 = V.q < .35 ? 0 : V.q < .9 ? .55 : 0, by0 = V.q < .35 ? -10.35 : -10.25;
+    for (const s of [-1, 1]) P(ellPts(bx0 + s * .24, by0, .17, .11, 10, 0, s * .3), { wash: mixCol(BODYDEEP, PAL.ink, .45), ink: null });
+  }
+  if (o.spout !== 0) {   // the spout: a whale's clearest cue, and it costs three droplets
+    const k = clamp(o.spout ?? .75), h = 1.5 + .35 * Math.sin(T * 2.2);
+    for (let i = 0; i < 5; i++) {
+      const ph = frac(T * 1.1 + i / 5), rs2 = (.15 + .1 * ph) * (1 - ph * .35) * k;
+      P(ellPts(.02 + Math.sin(i * 1.7 + T * 1.6) * .38 * (1 + ph) * k, -10.55 - ph * h * k, rs2, rs2 * 1.25, 8), { wash: PAL.sky, fill: PAL.pearl, fillOp: 60, ink: PAL.ink, sw: sw * .35 });
     }
   }
-  // the ahoge (呆毛): one cheeky curl on the crown
-  if (V.q > -.3) { const ay = Math.sin(swp) * .25; P(ribbon([[hx - .1, -11.15], [hx + .55, -11.85 + ay], [hx + .95, -12.55 + ay], [hx + .55, -12.95], [hx + .25, -12.6]], .55, .12), { wash: HAIR, fill: HAIRD, fillOp: 60, ink: PAL.ink, sw: sw * .6 }); }
-  // the head (face) over the back hair
-  rs('head');
-  P(ellPts(hx, -6.75, 4.3, 4.15, 30, J / u), { wash: SKIN, fill: mixCol(SKIN, '#F2C4B0', .5), fillOp: 50, bleed: .1, tex: .5, ink: null });
-  P(ellPts(hx, -6.75, 4.3, 4.15, 30, J / u), { ink: PAL.ink, sw: sw * .95 });
-  // the bangs: a bright blue fringe across the forehead with a scalloped hem, and side locks; the darker back hair
-  // shows only at the sides and behind, so the head does not read as one solid blue shape
-  if (!back) {
-    const bx = V.q < .35 ? hx - 1.6 : hx;
-    const fw = V.q < .35 ? 2.9 : 3.75;
-    const capPts = [];
-    for (let i = 0; i <= 16; i++) { const a = Math.PI + i / 16 * Math.PI; capPts.push([bx + Math.cos(a) * fw * 1.02, -6.9 + Math.sin(a) * 4.1]); }
-    P(capPts, { wash: HAIR, washOp: 255, fill: mixCol(HAIR, '#FFFFFF', .2), fillOp: 60, ink: PAL.ink, sw: sw * .9, curv: .25 });
-    // the hem: scalloped curls meeting in a soft point between the eyes
-    const hem = [[bx - fw, -8.1], [bx - fw * .72, -7.5], [bx - fw * .4, -7.95], [bx - fw * .15, -7.42], [bx, -7.85], [bx + fw * .15, -7.42], [bx + fw * .4, -7.95], [bx + fw * .72, -7.5], [bx + fw, -8.1]];
-    P(hem.concat([[bx + fw, -9.3], [bx, -10.2], [bx - fw, -9.3]]), { wash: HAIR, washOp: 255, ink: PAL.ink, sw: sw * .7, curv: .5 });
-    INK([[bx - fw * .55, -8.9], [bx - fw * .35, -8.2]], sw * .45, mixCol(HAIR, '#FFFFFF', .55), 'inkfine', .5);
-    INK([[bx + fw * .3, -9.4], [bx + fw * .42, -8.6]], sw * .45, mixCol(HAIR, '#FFFFFF', .55), 'inkfine', .5);
-  }
-  // the whale ear-fins: little fins where the ears would be (front, 3/4 and side views)
-  rs('fins');
-  const earX = V.face.eyes.length ? V.face.eyes : [hx - 3.2, hx + 3.2];
-  for (const ex of [-1, 1].map(k => hx + k * (V.q < .35 ? 4.35 : 3.2))) {   // clear of the hair, like real fins sticking out
-    const s = ex < hx ? -1 : 1;
-    P(ribbon([[ex - s * .35, -7.15], [ex + s * .35, -7.75], [ex + s * .95, -7.15], [ex + s * .45, -6.6]], .8, .5), { wash: FIN, fill: mixCol(FIN, C.deep, .4), fillOp: 80, ink: PAL.ink, sw: sw * .7 });
-  }
 
-  // ---------- 4. the maids outfit: dress, apron, collar, bow ----------
-  rs('dress');
-  const bodyCx = V.q < .35 ? hx : hx * .5;
-  P(rrPts(bodyCx - 2.35, -3.7, 4.7, 2.5, .9), { wash: DRESS, fill: DRESSD, fillOp: 80, ink: PAL.ink, sw: sw * .85 });
-  const skirt = [[bodyCx - 2.3, -2.9], [bodyCx - 3.35, -1.25], [bodyCx - 2.0, -.95], [bodyCx - .8, -1.2], [bodyCx + .6, -1.2], [bodyCx + 2.0, -.95], [bodyCx + 3.35, -1.25], [bodyCx + 2.3, -2.9]];
-  P(skirt, { wash: DRESS, fill: DRESSD, fillOp: 90, ink: PAL.ink, sw: sw * .9, curv: .4 });
-  for (const k of [-2, -.8, .8, 2]) INK([[bodyCx + k * .8, -2.8], [bodyCx + k * 1.25, -1.25]], sw * .4, mixCol(DRESS, PAL.cream, .5), 'inkfine', .3);
-  // a white ruffle along the hem
-  { const hem = []; for (let i = 0; i <= 8; i++) { const q = i / 8, px = bodyCx - 3.1 + q * 6.2; hem.push([px, -1.12 + Math.sin(q * Math.PI) * .3 + (i % 2 ? .18 : 0)]); } for (let i = 8; i >= 0; i--) { const q = i / 8, px = bodyCx - 3.1 + q * 6.2; hem.push([px, -1.5 + Math.sin(q * Math.PI) * .3 + (i % 2 ? 0 : .16)]); } P(hem, { wash: PAL.pearl, fill: '#DDE8F5', fillOp: 70, ink: PAL.ink, sw: sw * .5, curv: .4 }); }
-  for (const s of [-1, 1]) INK([[bodyCx + s * 1.05, -2.5], [bodyCx + s * 2.0, -1.7], [bodyCx + s * 1.55, -1.1]], sw * .55, PAL.pearl, 'ink', .5);
-  // the apron: a white bib and skirt panel
-  P(rrPts(bodyCx - 1.05, -3.75, 2.1, 1.5, .35), { wash: PAL.pearl, fill: '#EAF3FF', fillOp: 80, ink: PAL.ink, sw: sw * .7 });
-  P([[bodyCx - 1.5, -2.55], [bodyCx + 1.5, -2.55], [bodyCx + 2.2, -1.15], [bodyCx + 1.2, -1.0], [bodyCx, -1.25], [bodyCx - 1.2, -1.0], [bodyCx - 2.2, -1.15]], { wash: PAL.pearl, fill: '#DDE8F5', fillOp: 60, ink: PAL.ink, sw: sw * .6, curv: .4 });
-  // the little whale mark on the apron (three dots and a tail, never lettering)
-  if (V.q >= 0) { P(ellPts(bodyCx, -2.2, .3, .22, 8), { wash: DRESS, ink: null }); P([[bodyCx - .02, -2.3], [bodyCx - .38, -2.55], [bodyCx - .32, -2.05]], { wash: DRESS, ink: null }); P([[bodyCx + .02, -2.3], [bodyCx + .38, -2.55], [bodyCx + .32, -2.05]], { wash: DRESS, ink: null }); }
-  // the collar and the big bow at the chest (front views)
-  if (V.q > 0) {
-    P([[-2.1, -3.9], [-.6, -3.45], [0, -3.95], [.6, -3.45], [2.1, -3.9], [1.9, -3.25], [0, -3.2], [-1.9, -3.25]].map(([a, b]) => [bodyCx + a, b]), { wash: PAL.pearl, ink: PAL.ink, sw: sw * .55 });
-    for (const s of [-1, 1]) P([[bodyCx, -2.95], [bodyCx + s * .95, -3.35], [bodyCx + s * .95, -2.55]], { wash: DRESSD, fill: mixCol(DRESSD, PAL.ink, .2), fillOp: 70, ink: PAL.ink, sw: sw * .55, curv: .3 });
-    P(ellPts(bodyCx, -2.95, .3, .3, 10), { wash: PAL.ochre, ink: PAL.ink, sw: sw * .45 });
-  }
-  // the bag (an optional accessory: the blue satchel of answers)
-  if (o.bag) { rs('bag'); drawBag(V, C, u, sw, o, map, bodyCx); }
-
-  // ---------- 5. face: eyes, mouth, cheeks, glasses ----------
+  // ---------- 4. face: eyes, mouth, cheeks, glasses ----------
   if (!back) {
     const Fc = V.face;
-    rs('eyes'); eyes(Fc, u, o, sw, sm, P);
+    rs('eyes'); eyes(Fc, u, o, sw, sm, P, INK);
     rs('mouth'); mouth(Fc, u, o.mouth === undefined ? 'smile' : o.mouth, sw, 0, P, INK);   // undefined = the resting smile
     rs('blush'); if (o.blush) blush(u, sw, Fc, o.blush === true ? 1 : o.blush, P, INK);
     if (o.gloom > .02) gloom(V, C, u, sw, o.gloom, P, INK);
@@ -225,37 +199,27 @@ function deepseeker(x, y, u, o = {}) {
     if (o.faceDraw) { rs('faceDraw'); o.faceDraw(u, sw); }
   }
 
-  // ---------- 6. the maid headdress, the arms in front ----------
-  rs('hat'); if (!o.noHat) maidHeaddress(hx, u, sw, swp, P, INK);
-  V.arms.filter(a => a[3] === 1).forEach(a => arm(a));
+  // ---------- 5. the fins in front, hats, the satchel ----------
+  rs('hat'); if (!o.noHat) hat(V, u, o.hat, sw, P, INK);
+  drawFins(1);
+  if (o.bag) { rs('bag'); drawBag(V, C, u, sw, o, map, V.bx); }
   rs('draw'); if (o.draw) o.draw(u, sw);
 
-  // ---------- 7. the emote ----------
+  // ---------- 6. the emote ----------
   rs('emote');
   if (o.emote) {
     const top = EMOTE_TOP.includes(o.emote), dir = o.flip ? -1 : 1;
-    const ex = x + dir * (top ? 0 : 5.4) * u, ey = y + dy + (top ? -15.6 : -12.4 + (o.emoteY || 0)) * u * (1 - sq);
+    const ex = x + dir * (top ? 0 : 5.3) * u, ey = y + dy + (top ? -14.6 : -12.4 + (o.emoteY || 0)) * u * (1 - sq);
     emote(o.emote, ex, ey, u * .95, o.emoteK ?? 1, o.emoteAge ?? T);
   }
   rs('after');   // so whatever is drawn next doesn't depend on this pose
 
-  // one arm: a sleeve, a little hand, and the o.armL / o.armR prop at its tip
-  function arm([px, py, which, layer]) {
-    rs('arm' + which);
-    const a = which === 'L' ? (o.aL ?? .1) : (o.aR ?? .1), isFar = layer === 0 && V.q >= .5 ? false : layer === 0 && V.q < .5;
-    // a raised arm swings its shoulder out a little; a lowered arm tucks close to the skirt
-    const s = which === 'L' ? -1 : 1, ax = px * (V.q < .35 ? 1 : 1) + s * .2, ay = V.q < .35 ? -3.5 : -3.5;
-    const ang = s * (-.55 + a * 1.15), c = Math.cos(ang), sn2 = Math.sin(ang), L = 2.35;
-    const put = (bx, by) => map(ax + bx * c - by * sn2, ay + bx * sn2 + by * c);
-    if (V.q > -.7) {
-      P([put(-.42, 0), put(.42, 0), put(.34, L * .92), put(-.34, L * .92)], { wash: layer === 0 ? mixCol(DRESS, PAL.ink, .2) : DRESS, fill: DRESSD, fillOp: 60, ink: PAL.ink, sw: sw * .8 });
-      P(ellPts(0, 0, 0, 0, 4), { ink: null });
-      const hand = put(0, L * .97);
-      paint(ellPts(hand[0], hand[1], .62 * u * Math.abs(sx), .6 * u * syg, 14), { wash: SKIN, ink: PAL.ink, sw: sw * .7 });
-      paint(ellPts(hand[0] - s * .12 * u * Math.abs(sx), hand[1] - .16 * u * syg, .18 * u * Math.abs(sx), .14 * u * syg, 8), { wash: mixCol(SKIN, PAL.blush, .45), ink: null });
-    }
+  // the props pinned to the fins follow the fin tips
+  for (const [which, tip] of [['L', tipL], ['R', tipR]]) {
     const hook = which === 'L' ? o.armL : o.armR;
-    if (hook) { const tip = put(0, L * .97); push(); translate(tip[0], tip[1]); hook(u, sw); pop(); }
+    if (!hook) continue;
+    const p = map(tip[0], tip[1]);
+    push(); translate(p[0], p[1]); hook(u, sw); pop();
   }
 }
 
@@ -269,25 +233,16 @@ function smearTrail(x, y, u, V, k, dir, col) {
   }
 }
 
-// The maid headdress (女仆发箍): a white frilled band across the fringe, a navy ribbon through it, a tiny bow.
-function maidHeaddress(hx, u, sw, swp, P, INK) {
-  P([[-4.35, -9.15], [-4.05, -9.85], [0, -10.15], [4.05, -9.85], [4.35, -9.15], [3.2, -9.35], [0, -9.25], [-3.2, -9.35]].map(([a, b]) => [hx + a, b]), { wash: PAL.pearl, fill: '#EAF3FF', fillOp: 70, ink: PAL.ink, sw: sw * .6, curv: .4 });
-
-  for (const s of [-1, 1]) P([[hx + s * 2.4, -9.55], [hx + s * 3.6, -10.25], [hx + s * 3.55, -9.35]], { wash: mixCol(PAL.deep, PAL.mid, .35), ink: PAL.ink, sw: sw * .5, curv: .3 });
-  P(ellPts(hx, -9.6, .3, .3, 10), { wash: PAL.clay, ink: PAL.ink, sw: sw * .4 });
-}
-
-// The satchel: a DeepSeek-blue bag at the hip, strap across the body, holding the answers.
+// The satchel: a DeepSeek-blue bag slung at the whale's side, strap over the back, holding the answers.
 function drawBag(V, C, u, sw, o, map, bodyCx) {
-  const side = V.q < .5 ? (V.face.sx) : 1, bx = (V.q < .35 ? bodyCx : 0) + side * 2.15, by = -1.6, w = 1.5, h = 1.4, col = '#1D4ED8';
+  const side = V.q < 0 ? -1 : 1, bx = side * 2.55 + V.face.cx * .35, by = -3.1, w = 1.35, h = 1.25, col = '#1D4ED8';
   const rr = (x0, y0, ww, hh, r) => rrPts(x0, y0, ww, hh, r).map(([a, b]) => map(a, b));
-  if (V.q > -.4) inkLine([map(-side * 1.2, -3.85), map(side * 1.4, -3.1), map(bx, by - h * .5)], sw * 1.5, mixCol(col, PAL.ink, .25), 'ink', .5);
-  paint(rr(bx - w / 2, by - h / 2, w, h, .35), { wash: col, fill: mixCol(col, PAL.ink, .3), fillOp: 60, ink: PAL.ink, sw: sw * .8 });
-  paint(rr(bx - w / 2, by - h / 2, w, .5, .15), { wash: mixCol(col, PAL.cream, .18), ink: PAL.ink, sw: sw * .6 });
-  paint(rr(bx - .22, by - h / 2 - .1, .44, .38, .08), { wash: PAL.ochre, ink: PAL.ink, sw: sw * .55 });
+  if (V.q > -.4) inkLine([map(-side * 1.35, -5.9), map(side * 1.75, -4.5), map(bx, by - h * .55)], sw * 1.4, mixCol(col, PAL.ink, .25), 'ink', .5);
+  paint(rr(bx - w / 2, by - h / 2, w, h, .32), { wash: col, fill: mixCol(col, PAL.ink, .3), fillOp: 60, ink: PAL.ink, sw: sw * .8 });
+  paint(rr(bx - w / 2, by - h / 2, w, .46, .15), { wash: mixCol(col, PAL.cream, .18), ink: PAL.ink, sw: sw * .6 });
+  paint(rr(bx - .2, by - h / 2 - .1, .4, .34, .08), { wash: PAL.ochre, ink: PAL.ink, sw: sw * .55 });
   if (o.bagNote) o.bagNote(u, sw);
 }
-
 // Blush: two soft pink circles with three hatch marks when it's strong.
 function blush(u, sw, Fc, b, P, INK) {
   const eyes = Fc.eyes.length ? Fc.eyes : [Fc.cx - 2.4, Fc.cx + 2.4];
@@ -310,18 +265,18 @@ function gloom(V, C, u, sw, g, P, INK) {
 // catchlights and a lid line over the top.
 // normal, look, wide, happy, closed, sleepy, narrow, angry, determined, sad, teary, cry, squeeze, shine, scared,
 // blank, spark, red, heart, x, swirl, dot, shades. o.eyes may be a pair: ['narrow', 'wide']; a profile view has one.
-function eyes(Fc, u, o, sw, smear, P) {
+function eyes(Fc, u, o, sw, smear, P, INK) {
   const xs = Fc.eyes;
   const kinds = Array.isArray(o.eyes) ? o.eyes : o.eyes === 'wink' ? ['happy', 'normal'] : [o.eyes || 'normal', o.eyes || 'normal'];
   const sqz = clamp(o.squint || 0);
   if (smear > .5) { for (const x of xs) P([[[x - .8, -7], [x + .8, -7]]][0], { ink: PAL.ink, sw: sw * 1.4 }); return; }
   if (sqz > .8) { for (const x of xs) P([[x - .75, -6.9], [x + .75, -6.9]], { ink: PAL.ink, sw }); return; }
   const k = sqz > 0 ? 1 - sqz : 1;
-  for (let i = 0; i < xs.length; i++) eye(kinds[i] || 'normal', xs[i], u, o, sw, P, k, xs.length);
+  for (let i = 0; i < xs.length; i++) eye(kinds[i] || 'normal', xs[i], u, o, sw, P, INK, k, xs.length);
 }
 
 // One eye at body-local x = ex (u), centred on y = -6.95. k = lid closure 0..1.
-function eye(e, ex, u, o, sw, P, k = 1, n = 2) {
+function eye(e, ex, u, o, sw, P, INK, k = 1, n = 2) {
   const lx = (o.lookX || 0) * .22, ly = (o.lookY || 0) * .2;
   const blinkOn = ['normal', 'look', 'wide', 'shine'].includes(e) && ((T * .9 + (o.seed || 0) * 1.7) % 3.3) < .12;
   const at = (x, y) => [ex + x, -6.95 + y];   // body-local
@@ -331,15 +286,15 @@ function eye(e, ex, u, o, sw, P, k = 1, n = 2) {
   const oval = (rx, ry) => {
     P(el(lx, ly * 1.2, rx, ry * k, 18), { wash: PAL.ink, ink: null });
     if (k > .45) {
-      P(el(lx - rx * .3, ly * 1.2 - ry * .36 * k, rx * .4, ry * .34 * k, 10), { wash: PAL.pearl, ink: null });
+      P(el(lx - rx * .28, ly * 1.2 - ry * .36 * k, rx * .42, ry * .36 * k, 10), { wash: PAL.pearl, ink: null });
       P(el(lx + rx * .32, ly * 1.2 + ry * .4 * k, rx * .17, ry * .14 * k, 8), { wash: PAL.pearl, washOp: 200, ink: null });
     }
   };
-  const lid = (drop = 0) => P(L([[-.84, -.5 + drop], [-.32, -.98 + drop], [.35, -.98 + drop], [.86, -.45 + drop]]), { ink: PAL.ink, sw: sw * .9 });
+  const lid = (drop = 0) => INK([[-.86, -.52 + drop], [-.32, -1.0 + drop], [.34, -1.0 + drop], [.88, -.48 + drop]], sw * .85, PAL.ink, 'ink', .55);
   switch (e) {
-    case 'normal': oval(.62, .8); lid(); break;
-    case 'look': oval(.58, .76); lid(); break;
-    case 'wide': oval(.74, .96); lid(-.12); break;
+    case 'normal': oval(.72, .92); lid(); break;
+    case 'look': oval(.68, .88); lid(); break;
+    case 'wide': oval(.86, 1.1); lid(-.12); break;
     case 'happy': P(L([[-.85, .3], [0, -.62], [.85, .3]]), { ink: PAL.ink, sw: sw * 1.5 }); break;
     case 'closed': P(L([[-.85, -.05], [0, .42], [.85, -.05]]), { ink: PAL.ink, sw: sw * 1.3 }); break;
     case 'sleepy': oval(.56, .46); P(L([[-.85, -.02], [0, .2], [.85, -.02]]), { ink: PAL.ink, sw: sw * 1.2 }); break;
@@ -422,7 +377,7 @@ function glasses(Fc, u, sw, kind, P, INK) {
 // `chomp` 0..1 opens the big mouth (a hinge under the nose, four teeth).
 // o, O, smile, grin, flat, wobble, cat, frown, smirk, laugh, open, wail, teeth, tongue, pout, yawn, yum
 function mouth(Fc, u, m, sw, chomp, P, INK) {
-  const [mx] = Fc.mouth, my = -6.1, dark = '#' + '4A2438', r = .62;
+  const [mx] = Fc.mouth, my = -5.55, dark = '#C4667C', r = .62;
   const W = (y = my - .2, w = .8) => INK([[mx - w, y], [mx - w * .45, y + .3], [mx, y + .08], [mx + w * .45, y + .3], [mx + w, y]], sw * .9, PAL.ink, 'ink', .5);   // the little soft smile
   const L = pts => pts.map(([a, b]) => [mx + a, my + b]);   // mouth-local, for the big mouths
   // the resting fish mouth: two soft lips round a dark opening
@@ -435,12 +390,15 @@ function mouth(Fc, u, m, sw, chomp, P, INK) {
   };
   // A smile: a soft open mouth whose lower edge curves up into a smile (up = 1), or down into a frown (up = -1).
   const smileLip = (up = 1) => {
-    const MY = -5.95, w = 1.2, h = .42;   // face-local: under the eyes, wide enough to read at a glance
-    const mouthPts = [[mx - w, MY - h * .5], [mx - w * .55, MY - h * .9], [mx, MY - h], [mx + w * .55, MY - h * .9], [mx + w, MY - h * .5]];
-    for (let i = 0; i <= 12; i++) { const q = i / 12; mouthPts.push([mx + (1 - q * 2) * w, MY - h * .5 + up * h * 1.35 * Math.sin(q * Math.PI)]); }
+    // a whale's smile runs wide across the muzzle: a long jaw line whose ends curl up into cheek corners
+    const MY = -5.55, w = 1.5, h = .4;
+    const mouthPts = [[mx - w, MY - h * .45], [mx - w * .55, MY - h * .85], [mx, MY - h * .95], [mx + w * .55, MY - h * .85], [mx + w, MY - h * .45]];
+    for (let i = 0; i <= 16; i++) { const q = i / 16; mouthPts.push([mx + (1 - q * 2) * w, MY - h * .45 + up * h * 1.25 * Math.sin(q * Math.PI)]); }
     P(mouthPts, { wash: dark, ink: PAL.ink, sw: sw * .95 });
-    P(ellPts(mx, MY + h * .2, w * .42, h * .22, 10), { wash: '#C4617A', ink: null });   // the tongue, so it reads as a happy open mouth
-    for (const s of [-1, 1]) INK([[mx + s * w * 1.02, MY - h * .35], [mx + s * (w + .34), MY - h * .35 - up * .36]], sw * .85, PAL.ink, 'ink', .5);   // the corners turning up
+    P(ellPts(mx, MY + h * .28, w * .3, h * .2, 10), { wash: '#C4617A', ink: null });   // the tongue, so it reads as a happy open mouth
+    for (const s of [-1, 1]) {   // the mouth line carries on past the lips, then flicks up
+      INK([[mx + s * (w + .02), MY - h * .35], [mx + s * (w + .62), MY - h * .1], [mx + s * (w + 1.25), MY - h * .7]], sw * .9, PAL.ink, 'ink', .6);
+    }
   };
   if (chomp > .02) {
     const open = clamp(chomp), h = 1 + 2.2 * open;

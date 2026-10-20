@@ -32,7 +32,7 @@ Noto Sans SC (SIL Open Font License), Permanent Marker (Apache-2.0), Shantell Sa
 
 ## Brand and characters
 
-"DeepSeek" is a trademark of its owner. The 大肥鱼 (fat fish girl) in this repository is an **original fan-made cartoon
+"DeepSeek" is a trademark of its owner. The 大肥鱼 (the little whale) in this repository is an **original fan-made cartoon
 character** built from the brief in `角色设定.md`; it is not the DeepSeek logo, not an official DeepSeek mascot, and this
 repository is not an official DeepSeek product. Claude and Claude Code are trademarks of Anthropic; they appear here
 only where the Claude Code plugin/Skill mechanism is named as the compatibility layer this repository installs into.
