@@ -63,7 +63,7 @@ flat frames instead, so a video still comes out (without the watercolour texture
 Code's `/plugin` mechanism, which is a Claude Code feature, not something DeepSeek publishes. In Claude Code:
 
 ```
-/plugin marketplace add tuzhechen2005/opus-video-skills
+/plugin marketplace add feicai922/deepseek-video-skills
 /plugin install painted-animation@deepseek-video-skills
 /plugin install kinetic-reel@deepseek-video-skills
 ```
@@ -75,7 +75,7 @@ edition lives in; the plugin names are `painted-animation` and `kinetic-reel`, t
 **As personal skills (any compatible agent).** Clone the repository once and link or copy the skill folders:
 
 ```bash
-git clone https://github.com/tuzhechen2005/opus-video-skills ~/deepseek-video-skills
+git clone https://github.com/feicai922/deepseek-video-skills ~/deepseek-video-skills
 ln -s ~/deepseek-video-skills/skills/painted-animation ~/.claude/skills/painted-animation    # Claude Code
 ln -s ~/deepseek-video-skills/skills/kinetic-reel ~/.claude/skills/kinetic-reel
 # or copy them into your agent's skill directory

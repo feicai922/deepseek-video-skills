@@ -2,7 +2,7 @@
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "deepseek-video-skills",
   "owner": {
-    "name": "tuzhechen2005"
+    "name": "feicai922"
   },
   "metadata": {
     "description": "DeepSeek 大肥鱼 video-making skills for Claude Code and compatible agents: hand-painted watercolour animation and kinetic-typography reels, every frame and every note generated in code. A DeepSeek-themed derivative of opus-video-skills (MIT)."
@@ -16,7 +16,7 @@
       "skills": ["./skills/painted-animation"],
       "category": "design",
       "keywords": ["animation", "watercolour", "deepseek", "lyric-video", "music-video", "p5js"],
-      "homepage": "https://github.com/tuzhechen2005/opus-video-skills/tree/main/skills/painted-animation"
+      "homepage": "https://github.com/feicai922/deepseek-video-skills/tree/main/skills/painted-animation"
     },
     {
       "name": "kinetic-reel",
@@ -26,7 +26,7 @@
       "skills": ["./skills/kinetic-reel"],
       "category": "design",
       "keywords": ["motion-graphics", "kinetic-typography", "showreel", "threejs", "webgl", "deepseek"],
-      "homepage": "https://github.com/tuzhechen2005/opus-video-skills/tree/main/skills/kinetic-reel"
+      "homepage": "https://github.com/feicai922/deepseek-video-skills/tree/main/skills/kinetic-reel"
     }
   ]
 }

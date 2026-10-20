@@ -58,7 +58,7 @@
 这是 Claude Code 的功能，不是 DeepSeek 官方发布的插件。在 Claude Code 中执行：
 
 ```
-/plugin marketplace add tuzhechen2005/opus-video-skills
+/plugin marketplace add feicai922/deepseek-video-skills
 /plugin install painted-animation@deepseek-video-skills
 /plugin install kinetic-reel@deepseek-video-skills
 ```
@@ -69,7 +69,7 @@
 **作为个人技能（任意兼容 Agent）。** 克隆后链接或复制技能目录：
 
 ```bash
-git clone https://github.com/tuzhechen2005/opus-video-skills ~/deepseek-video-skills
+git clone https://github.com/feicai922/deepseek-video-skills ~/deepseek-video-skills
 ln -s ~/deepseek-video-skills/skills/painted-animation ~/.claude/skills/painted-animation    # Claude Code
 ln -s ~/deepseek-video-skills/skills/kinetic-reel ~/.claude/skills/kinetic-reel
 # 或复制到你的 Agent 的技能目录
